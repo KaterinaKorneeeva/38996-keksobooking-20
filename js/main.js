@@ -1,55 +1,58 @@
 'use strict';
 
-var TITLES = ['Заголовок #1', 'Заголовок #2', 'Заголовок #3', 'Заголовок #4', 'Заголовок #5', 'Заголовок #6', 'Заголовок #7', 'Заголовок #8'];
 var TYPES = ['palace', 'flat', 'house', 'bungalo'];
 var TIMES = ['12:00', '13:00', '14:00'];
 var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
-var DESCRIPTION = ['Описание #1', 'Описание #2', 'Описание #3', 'Описание #4', 'Описание #5', 'Описание #6', 'Описание #7', 'Описание #8'];
 var PHOTOS = ['http://o0.github.io/assets/images/tokyo/hotel1.jpg', 'http://o0.github.io/assets/images/tokyo/hotel2.jpg', 'http://o0.github.io/assets/images/tokyo/hotel3.jpg'];
-var NUMBER_OF_PINS = 8;
+var ADVERTS_COUNT = 8;
+var PRICE_MIN = 1500;
+var PRICE_MAX = 10000;
+var PIN_W = 50;
+var PIN_H = 70;
+var PIN_Y_FROM = 130;
+var PIN_Y_TO = 630;
 
-var mapBlock = document.querySelector('.map');
-
+var map = document.querySelector('.map');
 var similarPinsElement = document.querySelector('.map__pins');
 var similarPinTemplate = document.querySelector('#pin')
   .content
   .querySelector('.map__pin');
 
-var mapWidth = similarPinsElement.offsetWidth;
-
-// Функция генерации случайного числа от и до
-var getRandomNumber = function (min, max) {
-  return Math.floor((Math.random() * max) + min);
-};
+function getRandomNumber(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 // Функция генерации случайного элемента в массиве
 var getRandomItem = function (arr) {
-  return arr[getRandomNumber(0, arr.length)];
+  return arr[getRandomNumber(0, arr.length - 1)];
 };
 
 // Функция генерации массива объектов
-var generatePins = function () {
-  var pinsArr = [];
+var generateAdverts = function (count) {
+  var adverts = [];
+  var mapWidth = similarPinsElement.offsetWidth;
 
-  for (var i = 0; i < NUMBER_OF_PINS; i++) {
-    var locationX = getRandomNumber(0, mapWidth - 50);
-    var locationY = getRandomNumber(130, 630);
+  for (var i = 0; i < count; i++) {
+    var locationX = getRandomNumber(0, mapWidth - PIN_W / 2);
+    var locationY = getRandomNumber(PIN_Y_FROM, PIN_Y_TO - PIN_H);
+    var guestsCount = getRandomNumber(1, 4);
+    var roomsCount = getRandomNumber(guestsCount, 4);
 
-    pinsArr.push({
+    adverts.push({
       author: {
-        avatar: 'img/avatars/user0' + getRandomNumber(1, NUMBER_OF_PINS) + '.png'
+        avatar: 'img/avatars/user0' + getRandomNumber(1, count) + '.png'
       },
       offer: {
-        title: getRandomItem(TITLES),
+        title: 'Заголовок #' + getRandomNumber(1, ADVERTS_COUNT),
         address: locationX + ', ' + locationY,
-        price: getRandomNumber(1500, 10000),
+        price: getRandomNumber(PRICE_MIN, PRICE_MAX),
         type: getRandomItem(TYPES),
-        rooms: getRandomNumber(1, 4),
-        guests: getRandomNumber(1, 4),
+        rooms: roomsCount,
+        guests: guestsCount,
         checkin: getRandomItem(TIMES),
         checkout: getRandomItem(TIMES),
         features: getRandomItem(FEATURES),
-        description: getRandomItem(DESCRIPTION),
+        description: 'Описание #' + getRandomNumber(1, ADVERTS_COUNT),
         photos: getRandomItem(PHOTOS),
       },
       location: {
@@ -58,17 +61,16 @@ var generatePins = function () {
       }
     });
   }
-  return pinsArr;
+  return adverts;
 };
 
 // Функция создания DOM элемента c объектами
-var renderPin = function (pin) {
+var renderPin = function (advert) {
   var pinElement = similarPinTemplate.cloneNode(true);
-
-  pinElement.querySelector('img').src = pin.author.avatar;
-  pinElement.querySelector('img').alt = pin.offer.title;
-  pinElement.style.left = pin.location.x + 'px';
-  pinElement.style.top = pin.location.y + 'px';
+  pinElement.querySelector('img').src = advert.author.avatar;
+  pinElement.querySelector('img').alt = advert.offer.title;
+  pinElement.style.left = advert.location.x + 'px';
+  pinElement.style.top = advert.location.y + 'px';
 
   return pinElement;
 };
@@ -82,8 +84,8 @@ var renderPins = function (arr) {
   return fragment;
 };
 
-mapBlock.classList.remove('map--faded');
-var pins = generatePins();
-similarPinsElement.appendChild(renderPins(pins));
+map.classList.remove('map--faded');
+var adverts = generateAdverts(ADVERTS_COUNT);
+similarPinsElement.appendChild(renderPins(adverts));
 
 
