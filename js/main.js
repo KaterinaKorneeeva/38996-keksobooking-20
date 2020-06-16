@@ -22,7 +22,38 @@ var similarPinsElement = document.querySelector('.map__pins');
 var similarPinTemplate = document.querySelector('#pin')
   .content
   .querySelector('.map__pin');
+
 var advertForm = document.querySelector('.ad-form');
+var roomsNumber = advertForm.querySelector('#room_number');
+var capacity = advertForm.querySelector('#capacity');
+var timein = advertForm.querySelector('#timein');
+var timeout = advertForm.querySelector('#timeout');
+var typeOfHousing = advertForm.querySelector('#type');
+var priceInput = advertForm.querySelector('#price');
+
+// перечисления типа жилья
+var Placement = {
+  BUNGALO: {
+    name: 'Бунгало',
+    minPrice: '0',
+  },
+  HOUSE: {
+    name: 'Дом',
+    minPrice: '5000',
+  },
+  FLAT: {
+    name: 'Квартира',
+    minPrice: '1000',
+  },
+  PALACE: {
+    name: 'Дворец',
+    minPrice: '10000',
+  },
+  fromId: function (id) {
+    return this[id.toUpperCase()];
+  }
+};
+
 
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -114,7 +145,6 @@ var switchInActiveMode = function () {
   advertForm.classList.add('ad-form--disabled');
 };
 
-
 mainPin.addEventListener('mousedown', logMouseButton);
 
 mainPin.addEventListener('keydown', function (evt) {
@@ -140,15 +170,6 @@ var getPinsCoord = function (pin) {
 
   return pinX + ', ' + pinY;
 };
-
-
-var roomsNumber = advertForm.querySelector('#room_number');
-var capacity = advertForm.querySelector('#capacity');
-var timein = advertForm.querySelector('#timein');
-var timeout = advertForm.querySelector('#timeout');
-var typeOfHousing = advertForm.querySelector('#type');
-var priceInput = advertForm.querySelector('#price');
-
 
 var validateRoomsAndGuests = function () {
   if ((roomsNumber.value === '100') && (capacity.value !== '0')) {
@@ -191,33 +212,8 @@ timein.addEventListener('change', inputChangeValue);
 timeout.addEventListener('change', inputChangeValue);
 typeOfHousing.addEventListener('change', setHousingPrice);
 
-
 // обработчик на кнопку отправки формы
 advertForm.addEventListener('submit', function (evt) {
   evt.preventDefault();
   switchInActiveMode();
-  // sendTest();
 });
-
-// перечисления типа жилья
-var Placement = {
-  BUNGALO: {
-    name: 'Бунгало',
-    minPrice: '0',
-  },
-  HOUSE: {
-    name: 'Дом',
-    minPrice: '5000',
-  },
-  FLAT: {
-    name: 'Квартира',
-    minPrice: '1000',
-  },
-  PALACE: {
-    name: 'Дворец',
-    minPrice: '10000',
-  },
-  fromId: function (id) {
-    return this[id.toUpperCase()];
-  }
-};
