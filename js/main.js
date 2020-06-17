@@ -11,11 +11,9 @@ var PIN_W = 50;
 var PIN_H = 70;
 var PIN_Y_FROM = 130;
 var PIN_Y_TO = 630;
-
-
 var MAIN_PIN_W = 65;
 var MAIN_PIN_H = 87;
-
+var LEFT_MOUSE_CODE = 0;
 
 var map = document.querySelector('.map');
 var similarPinsElement = document.querySelector('.map__pins');
@@ -30,6 +28,12 @@ var timein = advertForm.querySelector('#timein');
 var timeout = advertForm.querySelector('#timeout');
 var typeOfHousing = advertForm.querySelector('#type');
 var priceInput = advertForm.querySelector('#price');
+var mainPin = document.querySelector('.map__pin--main');
+var address = advertForm.querySelector('#address');
+var Key = {
+  ENTER: 'Enter',
+  ESCAPE: 'Escape'
+};
 
 // перечисления типа жилья
 var Placement = {
@@ -126,42 +130,41 @@ map.classList.remove('map--faded');
 var adverts = generateAdverts(ADVERTS_COUNT);
 similarPinsElement.appendChild(renderPins(adverts));
 
-// вторая часть (работа с формой)
-var mainPin = document.querySelector('.map__pin--main');
-
 // перевод страницы в активное состояние
-var switchActiveMode = function () {
-  var coordinates = getPinsCoord(mainPin);
+var switchMode = function (action) {
+  var coordinates = getPinCoord(mainPin);
 
-  advertForm.querySelector('#address').value = coordinates;
-  map.classList.remove('map--faded');
-  advertForm.classList.remove('ad-form--disabled');
+  if (action === 'active') {
+    address.value = coordinates;
+    map.classList.remove('map--faded');
+    advertForm.classList.remove('ad-form--disabled');
+  } else {
+    address.value = '';
+    map.classList.add('map--faded');
+    advertForm.classList.add('ad-form--disabled');
+  }
 };
 
-// перевод страницы в неактивное состояние
-var switchInActiveMode = function () {
-  advertForm.querySelector('#address').value = '';
-  map.classList.add('map--faded');
-  advertForm.classList.add('ad-form--disabled');
-};
-
-mainPin.addEventListener('mousedown', logMouseButton);
+mainPin.addEventListener('mousedown', onMainPinClick);
 
 mainPin.addEventListener('keydown', function (evt) {
   event.preventDefault();
-  if (evt.key === 'Enter') {
-    switchActiveMode();
+
+  var mode = 'active';
+  if (evt.key === Key.ENTER) {
+    switchMode(mode);
   }
 });
 
-function logMouseButton(evt) {
-  if (evt.button === 0) {
-    switchActiveMode();
+function onMainPinClick(evt) {
+  var mode = 'active';
+  if (evt.button === LEFT_MOUSE_CODE) {
+    switchMode(mode);
   }
 }
 
 // Нахождение координат главного пина
-var getPinsCoord = function (pin) {
+var getPinCoord = function (pin) {
   var pinLeft = pin.style.left;
   var pinTop = pin.style.top;
 
@@ -172,20 +175,28 @@ var getPinsCoord = function (pin) {
 };
 
 var validateRoomsAndGuests = function () {
-  if ((roomsNumber.value === '100') && (capacity.value !== '0')) {
-    capacity.setCustomValidity('не для гостей');
-  } else if (!(roomsNumber.value >= capacity.value) || (capacity.value === '0')) {
 
-    switch (roomsNumber.value) {
-      case '1':
-        capacity.setCustomValidity('для 1 гостя');
-        break;
-      case '2':
-        capacity.setCustomValidity('для 1 гостя или для 2 гостей');
-        break;
-      case '3':
-        capacity.setCustomValidity('для 1, 2 или 3 гостей');
-        break;
+  var error;
+  var roomsNum = parseInt(roomsNumber.value, 10);
+  var capacityNum = parseInt(capacity.value, 10);
+
+  if (roomsNum === 1) {
+    error = 'для 1 гостя';
+  } else if (roomsNum === 2) {
+    error = 'для 2 гостей или для 1 гостя';
+  } else if (roomsNum === 3) {
+    error = 'для 1, 2 или 3 гостей';
+  } else {
+    error = '';
+  }
+
+  if ((roomsNum === 100) && (capacityNum !== 0)) {
+    capacity.setCustomValidity('не для гостей');
+  } else if (!(roomsNum >= capacityNum) || (capacityNum === 0)) {
+    if ((roomsNum === 100) && (capacityNum === 0)) {
+      capacity.setCustomValidity('');
+    } else {
+      capacity.setCustomValidity(error);
     }
   } else {
     capacity.setCustomValidity('');
@@ -193,13 +204,13 @@ var validateRoomsAndGuests = function () {
 };
 
 // синхронизация Поля «Время заезда» и «Время выезда»
-var inputChangeValue = function (evt) {
+var selectTimeInTimeOut = function (evt) {
   timein.value = evt.target.value;
   timeout.value = evt.target.value;
 };
 
 // Установка минимального значения поля «Цена за ночь» зависит от поля «Типа жилья»
-var setHousingPrice = function (evt) {
+var setPlaceholderForPriceByHousing = function (evt) {
   var typeOfHouse = evt.target.value;
   priceInput.placeholder = Placement.fromId(typeOfHouse).minPrice;
   priceInput.min = Placement.fromId(typeOfHouse).minPrice;
@@ -208,12 +219,13 @@ var setHousingPrice = function (evt) {
 
 roomsNumber.addEventListener('change', validateRoomsAndGuests);
 capacity.addEventListener('change', validateRoomsAndGuests);
-timein.addEventListener('change', inputChangeValue);
-timeout.addEventListener('change', inputChangeValue);
-typeOfHousing.addEventListener('change', setHousingPrice);
+timein.addEventListener('change', selectTimeInTimeOut);
+timeout.addEventListener('change', selectTimeInTimeOut);
+typeOfHousing.addEventListener('change', setPlaceholderForPriceByHousing);
 
 // обработчик на кнопку отправки формы
 advertForm.addEventListener('submit', function (evt) {
   evt.preventDefault();
-  switchInActiveMode();
+  var mode = 'inactive';
+  switchMode(mode);
 });
