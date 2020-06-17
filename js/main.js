@@ -30,6 +30,7 @@ var typeOfHousing = advertForm.querySelector('#type');
 var priceInput = advertForm.querySelector('#price');
 var mainPin = document.querySelector('.map__pin--main');
 var address = advertForm.querySelector('#address');
+var activeMode = false;
 var Key = {
   ENTER: 'Enter',
   ESCAPE: 'Escape'
@@ -131,10 +132,10 @@ var adverts = generateAdverts(ADVERTS_COUNT);
 similarPinsElement.appendChild(renderPins(adverts));
 
 // перевод страницы в активное состояние
-var switchMode = function (action) {
+var switchMode = function (active) {
   var coordinates = getPinCoord(mainPin);
 
-  if (action === 'active') {
+  if (active) {
     address.value = coordinates;
     map.classList.remove('map--faded');
     advertForm.classList.remove('ad-form--disabled');
@@ -150,16 +151,16 @@ mainPin.addEventListener('mousedown', onMainPinClick);
 mainPin.addEventListener('keydown', function (evt) {
   event.preventDefault();
 
-  var mode = 'active';
+  activeMode = true;
   if (evt.key === Key.ENTER) {
-    switchMode(mode);
+    switchMode(activeMode);
   }
 });
 
 function onMainPinClick(evt) {
-  var mode = 'active';
+  activeMode = true;
   if (evt.button === LEFT_MOUSE_CODE) {
-    switchMode(mode);
+    switchMode(activeMode);
   }
 }
 
@@ -226,6 +227,6 @@ typeOfHousing.addEventListener('change', setPlaceholderForPriceByHousing);
 // обработчик на кнопку отправки формы
 advertForm.addEventListener('submit', function (evt) {
   evt.preventDefault();
-  var mode = 'inactive';
-  switchMode(mode);
+  activeMode = false;
+  switchMode(activeMode);
 });
