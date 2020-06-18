@@ -11,12 +11,54 @@ var PIN_W = 50;
 var PIN_H = 70;
 var PIN_Y_FROM = 130;
 var PIN_Y_TO = 630;
+var MAIN_PIN_W = 65;
+var MAIN_PIN_H = 87;
+var LEFT_MOUSE_CODE = 0;
 
 var map = document.querySelector('.map');
 var similarPinsElement = document.querySelector('.map__pins');
 var similarPinTemplate = document.querySelector('#pin')
   .content
   .querySelector('.map__pin');
+
+var advertForm = document.querySelector('.ad-form');
+var roomsNumber = advertForm.querySelector('#room_number');
+var capacity = advertForm.querySelector('#capacity');
+var timein = advertForm.querySelector('#timein');
+var timeout = advertForm.querySelector('#timeout');
+var typeOfHousing = advertForm.querySelector('#type');
+var priceInput = advertForm.querySelector('#price');
+var mainPin = document.querySelector('.map__pin--main');
+var address = advertForm.querySelector('#address');
+var activeMode = false;
+var Key = {
+  ENTER: 'Enter',
+  ESCAPE: 'Escape'
+};
+
+// перечисления типа жилья
+var Placement = {
+  BUNGALO: {
+    name: 'Бунгало',
+    minPrice: '0',
+  },
+  HOUSE: {
+    name: 'Дом',
+    minPrice: '5000',
+  },
+  FLAT: {
+    name: 'Квартира',
+    minPrice: '1000',
+  },
+  PALACE: {
+    name: 'Дворец',
+    minPrice: '10000',
+  },
+  fromId: function (id) {
+    return this[id.toUpperCase()];
+  }
+};
+
 
 function getRandomNumber(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -37,6 +79,7 @@ var generateAdverts = function (count) {
     var locationY = getRandomNumber(PIN_Y_FROM, PIN_Y_TO - PIN_H);
     var guestsCount = getRandomNumber(1, 4);
     var roomsCount = getRandomNumber(guestsCount, 4);
+    var time = getRandomItem(TIMES);
 
     adverts.push({
       author: {
@@ -49,8 +92,8 @@ var generateAdverts = function (count) {
         type: getRandomItem(TYPES),
         rooms: roomsCount,
         guests: guestsCount,
-        checkin: getRandomItem(TIMES),
-        checkout: getRandomItem(TIMES),
+        checkin: time,
+        checkout: time,
         features: getRandomItem(FEATURES),
         description: 'Описание #' + getRandomNumber(1, ADVERTS_COUNT),
         photos: getRandomItem(PHOTOS),
@@ -88,4 +131,102 @@ map.classList.remove('map--faded');
 var adverts = generateAdverts(ADVERTS_COUNT);
 similarPinsElement.appendChild(renderPins(adverts));
 
+// перевод страницы в активное состояние
+var switchMode = function (active) {
+  var coordinates = getPinCoord(mainPin);
 
+  if (active) {
+    address.value = coordinates;
+    map.classList.remove('map--faded');
+    advertForm.classList.remove('ad-form--disabled');
+  } else {
+    address.value = '';
+    map.classList.add('map--faded');
+    advertForm.classList.add('ad-form--disabled');
+  }
+};
+
+mainPin.addEventListener('mousedown', onMainPinClick);
+
+mainPin.addEventListener('keydown', function (evt) {
+  event.preventDefault();
+
+  activeMode = true;
+  if (evt.key === Key.ENTER) {
+    switchMode(activeMode);
+  }
+});
+
+function onMainPinClick(evt) {
+  activeMode = true;
+  if (evt.button === LEFT_MOUSE_CODE) {
+    switchMode(activeMode);
+  }
+}
+
+// Нахождение координат главного пина
+var getPinCoord = function (pin) {
+  var pinLeft = pin.style.left;
+  var pinTop = pin.style.top;
+
+  var pinX = parseInt(pinLeft, 10) - MAIN_PIN_W / 2;
+  var pinY = parseInt(pinTop, 10) + MAIN_PIN_H;
+
+  return pinX + ', ' + pinY;
+};
+
+var validateRoomsAndGuests = function () {
+
+  var error;
+  var roomsNum = parseInt(roomsNumber.value, 10);
+  var capacityNum = parseInt(capacity.value, 10);
+
+  if (roomsNum === 1) {
+    error = 'для 1 гостя';
+  } else if (roomsNum === 2) {
+    error = 'для 2 гостей или для 1 гостя';
+  } else if (roomsNum === 3) {
+    error = 'для 1, 2 или 3 гостей';
+  } else {
+    error = '';
+  }
+
+  if ((roomsNum === 100) && (capacityNum !== 0)) {
+    capacity.setCustomValidity('не для гостей');
+  } else if (!(roomsNum >= capacityNum) || (capacityNum === 0)) {
+    if ((roomsNum === 100) && (capacityNum === 0)) {
+      capacity.setCustomValidity('');
+    } else {
+      capacity.setCustomValidity(error);
+    }
+  } else {
+    capacity.setCustomValidity('');
+  }
+};
+
+// синхронизация Поля «Время заезда» и «Время выезда»
+var selectTimeInTimeOut = function (evt) {
+  timein.value = evt.target.value;
+  timeout.value = evt.target.value;
+};
+
+// Установка минимального значения поля «Цена за ночь» зависит от поля «Типа жилья»
+var setPlaceholderForPriceByHousing = function (evt) {
+  var typeOfHouse = evt.target.value;
+  priceInput.placeholder = Placement.fromId(typeOfHouse).minPrice;
+  priceInput.min = Placement.fromId(typeOfHouse).minPrice;
+};
+
+
+roomsNumber.addEventListener('change', validateRoomsAndGuests);
+capacity.addEventListener('change', validateRoomsAndGuests);
+timein.addEventListener('change', selectTimeInTimeOut);
+timeout.addEventListener('change', selectTimeInTimeOut);
+typeOfHousing.addEventListener('change', setPlaceholderForPriceByHousing);
+
+// обработчик на кнопку отправки формы
+advertForm.addEventListener('submit', function (evt) {
+  evt.preventDefault();
+  activeMode = false;
+  switchMode(activeMode);
+});
