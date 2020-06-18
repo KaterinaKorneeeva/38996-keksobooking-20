@@ -157,12 +157,12 @@ mainPin.addEventListener('keydown', function (evt) {
   }
 });
 
-function onMainPinClick(evt) {
+var onMainPinClick = function (evt) {
   activeMode = true;
   if (evt.button === LEFT_MOUSE_CODE) {
     switchMode(activeMode);
   }
-}
+};
 
 // Нахождение координат главного пина
 var getPinCoord = function (pin) {
