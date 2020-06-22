@@ -2,8 +2,6 @@
 'use strict';
 
 (function () {
-
-
   var TYPES = ['palace', 'flat', 'house', 'bungalo'];
   var TIMES = ['12:00', '13:00', '14:00'];
   var FEATURES = ['wifi', 'dishwasher', 'parking', 'washer', 'elevator', 'conditioner'];
@@ -14,7 +12,6 @@
   var PIN_H = 70;
   var MAP_Y_FROM = 130;
   var MAP_Y_TO = 630;
-
   var ADVERTS_COUNT = 8;
 
   var similarPinsElement = document.querySelector('.map__pins');
@@ -55,6 +52,7 @@
     }
     return adverts;
   };
+
   // перечисления типа жилья
   var Placement = {
     BUNGALO: {
@@ -82,7 +80,6 @@
     ADVERTS_COUNT: ADVERTS_COUNT,
     generateAdverts: generateAdverts,
     Placement: Placement
-
   };
 
 })();

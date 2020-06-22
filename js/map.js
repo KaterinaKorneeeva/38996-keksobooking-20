@@ -5,10 +5,9 @@
   var similarPinsElement = document.querySelector('.map__pins');
   var mainPin = document.querySelector('.map__pin--main');
   var activeMode = false;
-
+  var adverts = window.data.generateAdverts(window.data.ADVERTS_COUNT);
 
   map.classList.remove('map--faded');
-  var adverts = window.data.generateAdverts(window.data.ADVERTS_COUNT);
 
   // функция отрисовывает метки на карте
   similarPinsElement.appendChild(window.pin.renderPins(adverts));
@@ -24,5 +23,4 @@
       window.main.switchMode(activeMode);
     });
   });
-
 })();
