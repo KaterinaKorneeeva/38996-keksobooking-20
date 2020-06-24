@@ -32,7 +32,7 @@
           avatar: 'img/avatars/user0' + window.utils.getRandomNumber(1, count) + '.png'
         },
         offer: {
-          title: 'Заголовок #' + window.utils.getRandomNumber(1, window.main.ADVERTS_COUNT),
+          title: 'Заголовок #' + window.utils.getRandomNumber(1, ADVERTS_COUNT),
           address: locationX + ', ' + locationY,
           price: window.utils.getRandomNumber(PRICE_MIN, PRICE_MAX),
           type: window.utils.getRandomItem(TYPES),
@@ -41,7 +41,7 @@
           checkin: time,
           checkout: time,
           features: window.utils.getRandomItem(FEATURES),
-          description: 'Описание #' + window.utils.getRandomNumber(1, window.main.ADVERTS_COUNT),
+          description: 'Описание #' + window.utils.getRandomNumber(1, ADVERTS_COUNT),
           photos: window.utils.getRandomItem(PHOTOS),
         },
         location: {

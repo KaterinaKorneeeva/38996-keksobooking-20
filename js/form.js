@@ -9,42 +9,32 @@ var typeOfHousing = advertForm.querySelector('#type');
 var priceInput = advertForm.querySelector('#price');
 
 var onRoomsAndGuestsChange = function () {
-
-  var error;
+  var error = '';
   var roomsNum = parseInt(roomsNumber.value, 10);
   var capacityNum = parseInt(capacity.value, 10);
 
-  if (roomsNum === 1) {
-    error = 'для 1 гостя';
-  } else if (roomsNum === 2) {
-    error = 'для 2 гостей или для 1 гостя';
-  } else if (roomsNum === 3) {
-    error = 'для 1, 2 или 3 гостей';
-  } else {
-    error = '';
+  if (roomsNum === 100 && capacityNum !== 0) {
+    error = 'Не для гостей';
+  } else if (roomsNum !== 100 && capacityNum === 0) {
+    error = 'Для гостей';
+  } else if (capacityNum > roomsNum) {
+    error = roomsNum === 1
+      ? 'Для 1 гостя'
+      : 'Для ' + roomsNum + ' гостей';
   }
 
-  if ((roomsNum === 100) && (capacityNum !== 0)) {
-    capacity.setCustomValidity('не для гостей');
-  } else if (!(roomsNum >= capacityNum) || (capacityNum === 0)) {
-    if ((roomsNum === 100) && (capacityNum === 0)) {
-      capacity.setCustomValidity('');
-    } else {
-      capacity.setCustomValidity(error);
-    }
-  } else {
-    capacity.setCustomValidity('');
-  }
+  capacity.setCustomValidity(error);
 };
 
 // синхронизация Поля «Время заезда» и «Время выезда»
 var onTimeInTimeOutChange = function (evt) {
-  timein.value = evt.target.value;
-  timeout.value = evt.target.value;
+  var time = evt.target.value;
+  timein.value = time;
+  timeout.value = time;
 };
 
 // Установка минимального значения поля «Цена за ночь» зависит от поля «Типа жилья»
-var onMinPriceChange = function (evt) {
+var onTypeChange = function (evt) {
   var typeOfHouse = evt.target.value;
   var minPrice = window.data.Placement.fromId(typeOfHouse).minPrice;
   priceInput.placeholder = minPrice;
@@ -55,11 +45,13 @@ roomsNumber.addEventListener('change', onRoomsAndGuestsChange);
 capacity.addEventListener('change', onRoomsAndGuestsChange);
 timein.addEventListener('change', onTimeInTimeOutChange);
 timeout.addEventListener('change', onTimeInTimeOutChange);
-typeOfHousing.addEventListener('change', onMinPriceChange);
+typeOfHousing.addEventListener('change', onTypeChange);
 
 // обработчик на кнопку отправки формы
-advertForm.addEventListener('submit', function (evt) {
-  evt.preventDefault();
-  window.main.activeMode = false;
-  window.main.switchMode(window.main.activeMode);
-});
+var setSubmitClickListener = function (listener) {
+  advertForm.addEventListener('submit', listener);
+};
+
+window.form = {
+  setSubmitClickListener: setSubmitClickListener
+};
