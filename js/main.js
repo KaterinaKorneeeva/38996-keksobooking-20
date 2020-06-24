@@ -26,18 +26,15 @@
     }
   };
 
-  // ?? при нажатии на ENTER идет в эту функцию, а затем setMainPinClickListener ???
   window.map.setMainPinPressListener(function (evt) {
     window.utils.isEnterEvent(evt, function () {
       pageEnabled = true;
-      // pageEnabled = !pageEnabled;
       setPageEnabled(pageEnabled);
     });
   });
 
   window.map.setMainPinClickListener(function (evt) {
     window.utils.isMouseDownEvent(evt, function () {
-      // pageEnabled = !pageEnabled;
       pageEnabled = true;
       setPageEnabled(pageEnabled);
     });
