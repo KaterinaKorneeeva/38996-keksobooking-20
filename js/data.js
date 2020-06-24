@@ -14,7 +14,31 @@
   var MAP_Y_TO = 630;
   var ADVERTS_COUNT = 8;
 
+  // перечисления типа жилья
+  var Placement = {
+    BUNGALO: {
+      name: 'Бунгало',
+      minPrice: '0',
+    },
+    HOUSE: {
+      name: 'Дом',
+      minPrice: '5000',
+    },
+    FLAT: {
+      name: 'Квартира',
+      minPrice: '1000',
+    },
+    PALACE: {
+      name: 'Дворец',
+      minPrice: '10000',
+    },
+    fromId: function (id) {
+      return this[id.toUpperCase()];
+    }
+  };
+
   var similarPinsElement = document.querySelector('.map__pins');
+
   // Функция генерации массива объектов
   var generateAdverts = function (count) {
     var adverts = [];
@@ -51,29 +75,6 @@
       });
     }
     return adverts;
-  };
-
-  // перечисления типа жилья
-  var Placement = {
-    BUNGALO: {
-      name: 'Бунгало',
-      minPrice: '0',
-    },
-    HOUSE: {
-      name: 'Дом',
-      minPrice: '5000',
-    },
-    FLAT: {
-      name: 'Квартира',
-      minPrice: '1000',
-    },
-    PALACE: {
-      name: 'Дворец',
-      minPrice: '10000',
-    },
-    fromId: function (id) {
-      return this[id.toUpperCase()];
-    }
   };
 
   window.data = {
