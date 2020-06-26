@@ -11,7 +11,7 @@
   // Функция добавления нового эемента к списку
   var renderPins = function (arr) {
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < arr.length; i++) {
+    for (var i = 0; i < window.data.ADVERTS_COUNT; i++) {
       fragment.appendChild(window.pin.renderPin(arr[i]));
     }
     return fragment;
