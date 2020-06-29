@@ -10,14 +10,16 @@
   map.classList.remove('map--faded');
 
   // Функция добавления нового эемента к списку
-  var renderPins = function (arr) {
-
-    var takeNumber = arr.length > MAX_SIMILAR_ADVERTS_COUNT ? MAX_SIMILAR_ADVERTS_COUNT : arr.length;
+  var renderPins = function (adverts) {
+    var takeNumber = adverts.length > MAX_SIMILAR_ADVERTS_COUNT ? MAX_SIMILAR_ADVERTS_COUNT : adverts.length;
 
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < takeNumber; i++) {
-      fragment.appendChild(window.pin.renderPin(arr[i]));
-    }
+
+    adverts.slice(0, takeNumber)
+      .forEach(function (ad) {
+        fragment.appendChild(window.pin.renderPin(ad));
+      });
+
     return fragment;
   };
 
