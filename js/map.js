@@ -3,18 +3,32 @@
 
   var MAIN_PIN_W = 65;
   var MAIN_PIN_H = 87;
+  var MAX_SIMILAR_ADVERTS_COUNT = 5;
 
   var map = document.querySelector('.map');
   var mainPin = document.querySelector('.map__pin--main');
   map.classList.remove('map--faded');
 
   // Функция добавления нового эемента к списку
-  var renderPins = function (arr) {
+  var renderPins = function (adverts) {
+    var takeNumber = adverts.length > MAX_SIMILAR_ADVERTS_COUNT ? MAX_SIMILAR_ADVERTS_COUNT : adverts.length;
+
     var fragment = document.createDocumentFragment();
-    for (var i = 0; i < window.data.ADVERTS_COUNT; i++) {
-      fragment.appendChild(window.pin.renderPin(arr[i]));
-    }
+
+    adverts.slice(0, takeNumber)
+      .forEach(function (ad) {
+        fragment.appendChild(window.pin.renderPin(ad));
+      });
+
     return fragment;
+  };
+
+  // удаление пинов с карты
+  var deletePinsOnMap = function () {
+    var allPinsOnMap = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    allPinsOnMap.forEach(function (pin) {
+      pin.remove();
+    });
   };
 
   // нажатие ENTER по главному пину
@@ -37,11 +51,13 @@
 
     return pinX + ', ' + pinY;
   };
+
   window.map = {
     setMainPinClickListener: setMainPinClickListener,
     setMainPinPressListener: setMainPinPressListener,
     getPinCoord: getPinCoord,
-    renderPins: renderPins
+    renderPins: renderPins,
+    deletePinsOnMap: deletePinsOnMap
   };
 
 })();

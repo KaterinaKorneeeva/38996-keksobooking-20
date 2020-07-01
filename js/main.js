@@ -9,6 +9,9 @@
   var address = advertForm.querySelector('#address');
   var pageEnabled = false;
   var mapFilters = document.querySelector('.map__filters-container');
+  var adverts = [];
+  var typeOfHouse = 'any';
+  var mapTypeHouseElement = document.querySelector('#housing-type');
 
   // перевод страницы в активное состояние
   var setPageEnabled = function (enabled) {
@@ -42,6 +45,35 @@
     evt.preventDefault();
     pageEnabled = !pageEnabled;
     setPageEnabled(pageEnabled);
+    window.map.deletePinsOnMap();
+  });
+
+
+  var updateAdverts = function () {
+    window.map.deletePinsOnMap();
+
+    // фильтрация по типу жилья
+    var sameTypeOfHouseAdverts = adverts.filter(function (it) {
+      return it.offer.type === typeOfHouse;
+    });
+
+    // отфильтрованные объявления + все объявления
+    var filteredAdverts = sameTypeOfHouseAdverts.concat(adverts);
+
+    // уникальные объявления
+    var uniqueAdverts =
+    filteredAdverts.filter(function (it, i) {
+      return filteredAdverts.indexOf(it) === i;
+    });
+
+    similarPinsElement.appendChild(window.map.renderPins(uniqueAdverts));
+  };
+
+  // фильтр по типу жилья
+  mapTypeHouseElement.addEventListener('change', function (evt) {
+    var newType = evt.target.value;
+    typeOfHouse = newType;
+    updateAdverts();
   });
 
   var errorHandler = function (errorMessage) {
@@ -56,10 +88,10 @@
     document.body.insertAdjacentElement('afterbegin', node);
   };
 
-  var successHandler = function (adverts) {
+  var successHandler = function (data) {
+    adverts = data;
     createCardInfo(adverts[1]);
-    similarPinsElement.appendChild(window.map.renderPins(adverts));
-
+    updateAdverts();
   };
 
   window.load(successHandler, errorHandler);
