@@ -23,6 +23,14 @@
     return fragment;
   };
 
+  // Удаление popupCard
+  var closePopupCard = function () {
+    var popup = document.querySelector('.map__card');
+    if (popup) {
+      popup.remove();
+    }
+  };
+
   // удаление пинов с карты
   var deletePinsOnMap = function () {
     var allPinsOnMap = document.querySelectorAll('.map__pin:not(.map__pin--main)');
@@ -57,7 +65,8 @@
     setMainPinPressListener: setMainPinPressListener,
     getPinCoord: getPinCoord,
     renderPins: renderPins,
-    deletePinsOnMap: deletePinsOnMap
+    deletePinsOnMap: deletePinsOnMap,
+    closePopupCard: closePopupCard
   };
 
 })();
