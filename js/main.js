@@ -11,6 +11,7 @@
   var adverts = [];
   var typeOfHouse = 'any';
   var mapTypeHouseElement = document.querySelector('#housing-type');
+  var isOpenPopup = false;
 
   // перевод страницы в активное состояние
   var setPageEnabled = function (enabled) {
@@ -25,29 +26,6 @@
       advertForm.classList.add('ad-form--disabled');
     }
   };
-
-  window.map.setMainPinPressListener(function (evt) {
-    window.utils.isEnterEvent(evt, function () {
-      window.map.closePopupCard();
-      pageEnabled = true;
-      setPageEnabled(pageEnabled);
-    });
-  });
-
-  window.map.setMainPinClickListener(function (evt) {
-    window.utils.isMouseDownEvent(evt, function () {
-      window.map.closePopupCard();
-      pageEnabled = true;
-      setPageEnabled(pageEnabled);
-    });
-  });
-
-  window.form.setSubmitClickListener(function (evt) {
-    evt.preventDefault();
-    pageEnabled = !pageEnabled;
-    setPageEnabled(pageEnabled);
-    window.map.deletePinsOnMap();
-  });
 
   var updateAdverts = function () {
     window.map.deletePinsOnMap();
@@ -67,53 +45,62 @@
     });
 
     similarPinsElement.appendChild(window.map.renderPins(uniqueAdverts));
-  };
 
-  var openCard = function (evt) {
-    if (evt.target.alt !== 'Метка объявления' && evt.target.tagName === 'IMG' || evt.target.className === 'map__pin') {
-
-      var selectedPin = evt.target;
-      if (evt.target.className === 'map__pin') {
-        selectedPin = evt.target.children[0];
-      }
-
-      window.map.closePopupCard();
-      var srcImgAuthor = selectedPin.attributes[0].textContent;
-      var test = getInfoByCard(srcImgAuthor);
-      window.card.renderCard(adverts[test]);
-
-      window.card.setCardClickListener(function (evt) {
-        window.utils.isMouseDownEvent(evt, function () {
-          window.map.closePopupCard();
-        });
-      });
-
-      window.card.setCardPressListener(function (evt) {
-        window.utils.isEscEvent(evt, function () {
-          window.map.closePopupCard();
-        });
-      });
-
-    }
-  };
-
-  map.addEventListener('keydown', function (evt) {
-    window.utils.isEnterEvent(evt, function () {
-      openCard(evt);
+    window.map.setPinClickListener(function (evt) {
+      isOpenPopup = true;
+      openClosePopup(evt, isOpenPopup, uniqueAdverts);
     });
-  });
 
-  map.addEventListener('click', function (evt) {
-    openCard(evt);
-  });
+  };
+
+  var onPopupClick = function () {
+    window.card.setCardClickListener(function (evt) {
+      window.utils.isMouseDownEvent(evt, function () {
+        openClosePopup(evt, !isOpenPopup);
+      });
+    });
+  };
+
+  // обработчик на ESCAPE
+  var onPopupEscPress = function () {
+    document.removeEventListener('keydown', function (evt) {
+      window.utils.isEscEvent(evt, function () {
+        openClosePopup(evt, !isOpenPopup);
+      });
+    });
+  };
 
   var getInfoByCard = function (atr) {
     for (var i = 0; i < adverts.length; i++) {
       if (adverts[i].author.avatar === atr) {
-        var index = i;
+        var advert = adverts[i];
       }
     }
-    return index;
+    return advert;
+  };
+
+  // показать попап
+  var openClosePopup = function (evt, popup) {
+    if (popup) {
+      var selectedPin = evt.target;
+      if (evt.target.className === 'map__pin') {
+        selectedPin = evt.target.children[0];
+      }
+      openClosePopup(!isOpenPopup);
+      var srcImgAuthor = selectedPin.attributes[0].textContent;
+      var advert = getInfoByCard(srcImgAuthor);
+      window.card.renderCard(advert);
+
+      onPopupClick();
+      onPopupEscPress();
+    } else {
+      var popupBlock = document.querySelector('.map__card');
+      if (popupBlock) {
+        popupBlock.remove();
+      }
+
+      onPopupEscPress();
+    }
   };
 
   // фильтр по типу жилья
@@ -121,6 +108,37 @@
     var newType = evt.target.value;
     typeOfHouse = newType;
     updateAdverts();
+  });
+
+  // обработчик на Enter
+  window.map.setMainPinPressListener(function (evt) {
+    window.utils.isEnterEvent(evt, function () {
+      pageEnabled = true;
+      setPageEnabled(pageEnabled);
+    });
+  });
+
+  // обработчик на клика
+  window.map.setMainPinClickListener(function (evt) {
+    window.utils.isMouseDownEvent(evt, function () {
+      openClosePopup(evt, !isOpenPopup);
+      pageEnabled = true;
+      setPageEnabled(pageEnabled);
+    });
+  });
+
+  // обработчик на submit
+  window.form.setSubmitClickListener(function (evt) {
+    evt.preventDefault();
+    pageEnabled = !pageEnabled;
+    setPageEnabled(pageEnabled);
+    window.map.deletePinsOnMap();
+  });
+
+  document.addEventListener('keydown', function (evt) {
+    window.utils.isEscEvent(evt, function () {
+      openClosePopup(evt, !isOpenPopup);
+    });
   });
 
   var errorHandler = function (errorMessage) {

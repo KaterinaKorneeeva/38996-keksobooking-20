@@ -17,7 +17,6 @@
   // проверка нажатия ESCAPE
   var isEscEvent = function (evt, action) {
     if (evt.key === Key.ESCAPE) {
-      console.log('evt.key',evt.key);
       action();
     }
   };
