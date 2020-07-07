@@ -14,6 +14,13 @@
     }
   };
 
+  // проверка нажатия ESCAPE
+  var isEscEvent = function (evt, action) {
+    if (evt.key === Key.ESCAPE) {
+      action();
+    }
+  };
+
   // проверка нажатия левой кнопки мыши
   var isMouseDownEvent = function (evt, action) {
     if (evt.button === LEFT_MOUSE_CODE) {
@@ -34,6 +41,7 @@
   window.utils = {
     Key: Key,
     isEnterEvent: isEnterEvent,
+    isEscEvent: isEscEvent,
     isMouseDownEvent: isMouseDownEvent,
     getRandomNumber: getRandomNumber,
     getRandomItem: getRandomItem

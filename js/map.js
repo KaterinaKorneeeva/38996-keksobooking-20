@@ -41,6 +41,14 @@
     mainPin.addEventListener('click', listener);
   };
 
+  // клик по пину
+  var setPinClickListener = function (listener) {
+    var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
+    pins.forEach(function (pin) {
+      pin.addEventListener('click', listener);
+    });
+  };
+
   // Нахождение координат главного пина
   var getPinCoord = function (pin) {
     var pinLeft = pin.style.left;
@@ -55,6 +63,7 @@
   window.map = {
     setMainPinClickListener: setMainPinClickListener,
     setMainPinPressListener: setMainPinPressListener,
+    setPinClickListener: setPinClickListener,
     getPinCoord: getPinCoord,
     renderPins: renderPins,
     deletePinsOnMap: deletePinsOnMap
