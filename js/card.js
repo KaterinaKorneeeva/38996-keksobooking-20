@@ -28,9 +28,9 @@
       document.querySelector('.popup__features').removeChild(cardFeatureElements[i]);
     }
 
-    for (var j = 0; j < features.length; j++) {
+    for (i = 0; i < features.length; i++) {
       var secondElementHTML = document.createElement('li');
-      secondElementHTML.className = 'popup__feature ' + 'popup__feature--' + features[j];
+      secondElementHTML.className = 'popup__feature ' + 'popup__feature--' + features[i];
       document.querySelector('.popup__features').appendChild(secondElementHTML);
     }
   };

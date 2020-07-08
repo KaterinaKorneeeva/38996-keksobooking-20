@@ -118,10 +118,11 @@
     });
   });
 
-  // обработчик на клика
+  // обработчик на клик
   window.map.setMainPinClickListener(function (evt) {
     window.utils.isMouseDownEvent(evt, function () {
-      openClosePopup(evt, !isOpenPopup);
+      isOpenPopup = false;
+      openClosePopup(evt, isOpenPopup);
       pageEnabled = true;
       setPageEnabled(pageEnabled);
     });
