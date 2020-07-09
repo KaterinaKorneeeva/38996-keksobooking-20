@@ -56,7 +56,6 @@
 
     var pinX = parseInt(pinLeft, 10) - MAIN_PIN_W / 2;
     var pinY = parseInt(pinTop, 10) + MAIN_PIN_H;
-
     return pinX + ', ' + pinY;
   };
 
