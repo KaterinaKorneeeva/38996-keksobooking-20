@@ -98,7 +98,14 @@
       if (popupBlock) {
         popupBlock.remove();
       }
-
+      var successBlock = document.querySelector('.success');
+      if (successBlock) {
+        successBlock.remove();
+      }
+      var errorBlock = document.querySelector('.error');
+      if (errorBlock) {
+        errorBlock.remove();
+      }
       onPopupEscPress();
     }
   };
@@ -131,27 +138,56 @@
   // обработчик на submit
   window.form.setSubmitClickListener(function (evt) {
     evt.preventDefault();
-    pageEnabled = !pageEnabled;
-    setPageEnabled(pageEnabled);
-    window.map.deletePinsOnMap();
+    window.upload(successHandler2, errorHandler, new FormData(advertForm), function () {});
   });
 
   document.addEventListener('keydown', function (evt) {
     window.utils.isEscEvent(evt, function () {
-      openClosePopup(evt, !isOpenPopup);
+      isOpenPopup = false;
+      openClosePopup(evt, isOpenPopup);
     });
   });
 
   var errorHandler = function (errorMessage) {
-    var node = document.createElement('div');
-    node.style = 'z-index: 100; margin: 0 auto; text-align: center; background-color: red;';
-    node.style.position = 'absolute';
-    node.style.left = 0;
-    node.style.right = 0;
-    node.style.fontSize = '30px';
+    var errorMessageTemplate = document.querySelector('#error')
+      .content
+      .querySelector('.error');
 
-    node.textContent = errorMessage;
-    document.body.insertAdjacentElement('afterbegin', node);
+    var errorElement = errorMessageTemplate.cloneNode(true);
+    errorElement.querySelector('.error__message').textContent = errorMessage;
+    document.body.appendChild(errorElement);
+
+    var errorButton = document.querySelector('.error__button');
+    errorButton.addEventListener('click', function (evt) {
+      isOpenPopup = false;
+      openClosePopup(evt, isOpenPopup);
+    });
+
+    document.addEventListener('click', function (evt) {
+      isOpenPopup = false;
+      openClosePopup(evt, isOpenPopup);
+    });
+
+  };
+
+  // как правильно назвать этот обработчик??  (у меня уже есть один для GET)
+  var successHandler2 = function () {
+    var successMessageTemplate = document.querySelector('#success')
+      .content
+      .querySelector('.success');
+
+    var successElement = successMessageTemplate.cloneNode(true);
+    document.body.appendChild(successElement);
+
+    document.addEventListener('click', function (evt) {
+      isOpenPopup = false;
+      openClosePopup(evt, isOpenPopup);
+    });
+
+    advertForm.reset();
+    pageEnabled = !pageEnabled;
+    setPageEnabled(pageEnabled);
+    window.map.deletePinsOnMap();
   };
 
   var successHandler = function (data) {
