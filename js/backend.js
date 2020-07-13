@@ -1,13 +1,11 @@
 'use strict';
 (function () {
-  // url отправка данных
-  var URL = 'https://javascript.pages.academy/keksobooking';
   var StatusCode = {
     OK: 200
   };
   var TIMEOUT_IN_MS = 10000;
 
-  window.upload = function (onSuccess, onError, data) {
+  window.backend = function (onSuccess, onError, url, action, data) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
@@ -30,7 +28,7 @@
     xhr.timeout = TIMEOUT_IN_MS;
 
     // отправляем данные - открываем соединение типа POST
-    xhr.open('POST', URL);
+    xhr.open(action, url);
 
     // передаем данные
     xhr.send(data);

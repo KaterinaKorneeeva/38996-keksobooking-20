@@ -13,6 +13,10 @@
   var mapTypeHouseElement = document.querySelector('#housing-type');
   var isOpenPopup = false;
 
+  var successMessageTemplate = document.querySelector('#success')
+    .content
+    .querySelector('.success');
+
   // перевод страницы в активное состояние
   var setPageEnabled = function (enabled) {
     if (enabled) {
@@ -138,7 +142,7 @@
   // обработчик на submit
   window.form.setSubmitClickListener(function (evt) {
     evt.preventDefault();
-    window.upload(successHandler2, errorHandler, new FormData(advertForm), function () {});
+    window.backend(uploadSuccessHandler, errorHandler, 'https://javascript.pages.academy/keksobooking', 'POST', new FormData(advertForm));
   });
 
   document.addEventListener('keydown', function (evt) {
@@ -170,12 +174,7 @@
 
   };
 
-  // как правильно назвать этот обработчик??  (у меня уже есть один для GET)
-  var successHandler2 = function () {
-    var successMessageTemplate = document.querySelector('#success')
-      .content
-      .querySelector('.success');
-
+  var uploadSuccessHandler = function () {
     var successElement = successMessageTemplate.cloneNode(true);
     document.body.appendChild(successElement);
 
@@ -195,6 +194,6 @@
     updateAdverts();
   };
 
-  window.load(successHandler, errorHandler);
+  window.backend(successHandler, errorHandler, 'https://javascript.pages.academy/keksobooking/data', 'GET');
 
 })();
