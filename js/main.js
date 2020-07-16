@@ -1,6 +1,7 @@
 'use strict';
 
 (function () {
+  var MAX_SIMILAR_ADVERTS_COUNT = 5;
 
   var map = document.querySelector('.map');
   var advertForm = document.querySelector('.ad-form');
@@ -9,8 +10,7 @@
   var address = advertForm.querySelector('#address');
   var pageEnabled = false;
   var adverts = [];
-  var typeOfHouse = 'any';
-  var mapTypeHouseElement = document.querySelector('#housing-type');
+  var mapFilters = document.querySelector('.map__filters-container');
   var isOpenPopup = false;
 
   var successMessageTemplate = document.querySelector('#success')
@@ -34,19 +34,8 @@
   var updateAdverts = function () {
     window.map.deletePinsOnMap();
 
-    // фильтрация по типу жилья
-    var sameTypeOfHouseAdverts = adverts.filter(function (it) {
-      return it.offer.type === typeOfHouse;
-    });
-
-    // отфильтрованные объявления + все объявления
-    var filteredAdverts = sameTypeOfHouseAdverts.concat(adverts);
-
-    // уникальные объявления
-    var uniqueAdverts =
-    filteredAdverts.filter(function (it, i) {
-      return filteredAdverts.indexOf(it) === i;
-    });
+    var takeNumber = adverts.length > MAX_SIMILAR_ADVERTS_COUNT ? MAX_SIMILAR_ADVERTS_COUNT : adverts.length;
+    var uniqueAdverts = window.filters.filtersAdverts(adverts).slice(0, takeNumber);
 
     similarPinsElement.appendChild(window.map.renderPins(uniqueAdverts));
 
@@ -54,7 +43,6 @@
       isOpenPopup = true;
       openClosePopup(evt, isOpenPopup, uniqueAdverts);
     });
-
   };
 
   var onPopupClick = function () {
@@ -114,12 +102,10 @@
     }
   };
 
-  // фильтр по типу жилья
-  mapTypeHouseElement.addEventListener('change', function (evt) {
-    var newType = evt.target.value;
-    typeOfHouse = newType;
+  // фильтрация
+  mapFilters.addEventListener('change', window.debounce(function () {
     updateAdverts();
-  });
+  }));
 
   // обработчик на Enter
   window.map.setMainPinPressListener(function (evt) {
