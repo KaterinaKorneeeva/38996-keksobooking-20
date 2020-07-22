@@ -60,13 +60,7 @@
       );
     });
 
-    // уникальные объявления
-    var uniqueAdverts =
-    filteredAdverts.filter(function (it, i) {
-      return filteredAdverts.indexOf(it) === i;
-    });
-
-    return uniqueAdverts;
+    return filteredAdverts;
 
   };
 

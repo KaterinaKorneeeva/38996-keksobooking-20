@@ -128,7 +128,7 @@
   // обработчик на submit
   window.form.setSubmitClickListener(function (evt) {
     evt.preventDefault();
-    window.backend(uploadSuccessHandler, errorHandler, 'https://javascript.pages.academy/keksobooking', 'POST', new FormData(advertForm));
+    window.backend.save(uploadSuccessHandler, errorHandler, new FormData(advertForm));
   });
 
   document.addEventListener('keydown', function (evt) {
@@ -180,6 +180,6 @@
     updateAdverts();
   };
 
-  window.backend(successHandler, errorHandler, 'https://javascript.pages.academy/keksobooking/data', 'GET');
+  window.backend.load(successHandler, errorHandler);
 
 })();
