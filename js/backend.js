@@ -1,16 +1,20 @@
 'use strict';
+
 (function () {
-
   var TIMEOUT_IN_MS = 10000;
-
   var StatusCode = {
     OK: 200
   };
 
   var Url = {
-    GET: 'https://javascript.pages.academy/keksobooking/data',
-    POST:' https://javascript.pages.academy/keksobooking'
-  }
+    LOAD: 'https://javascript.pages.academy/keksobooking/data',
+    SAVE: 'https://javascript.pages.academy/keksobooking'
+  };
+
+  var Method = {
+    GET: 'GET',
+    POST: 'POST'
+  };
 
   var createRequest = function (onSuccess, onError) {
     var xhr = new XMLHttpRequest();
@@ -37,19 +41,17 @@
   };
 
   var load = function (onSuccess, onError) {
-    var xhr =  createRequest(onSuccess, onError);
+    var xhr = createRequest(onSuccess, onError);
     // отправляем данные - открываем соединение типа POST
-    console.log('Url.GET', Url.GET);
-    xhr.open('GET', Url.GET);
+    xhr.open(Method.GET, Url.LOAD);
     // передаем данные
     xhr.send();
   };
 
   var save = function (onSuccess, onError, data) {
-    var xhr =  createRequest(onSuccess, onError);
+    var xhr = createRequest(onSuccess, onError);
     // отправляем данные - открываем соединение типа POST
-    console.log('Url.GET', Url.GET);
-    xhr.open('POST', Url.POST);
+    xhr.open(Method.POST, Url.SAVE);
 
     // передаем данные
     xhr.send(data);

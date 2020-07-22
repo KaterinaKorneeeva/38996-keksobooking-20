@@ -1,8 +1,6 @@
 'use strict';
 
 (function () {
-  var MAX_SIMILAR_ADVERTS_COUNT = 5;
-
   var map = document.querySelector('.map');
   var advertForm = document.querySelector('.ad-form');
   var similarPinsElement = document.querySelector('.map__pins');
@@ -12,10 +10,6 @@
   var adverts = [];
   var mapFilters = document.querySelector('.map__filters-container');
   var isOpenPopup = false;
-
-  var successMessageTemplate = document.querySelector('#success')
-    .content
-    .querySelector('.success');
 
   // перевод страницы в активное состояние
   var setPageEnabled = function (enabled) {
@@ -34,14 +28,13 @@
   var updateAdverts = function () {
     window.map.deletePinsOnMap();
 
-    var takeNumber = adverts.length > MAX_SIMILAR_ADVERTS_COUNT ? MAX_SIMILAR_ADVERTS_COUNT : adverts.length;
-    var uniqueAdverts = window.filters.filtersAdverts(adverts).slice(0, takeNumber);
+    var filteredAdverts = window.filters.filterAdverts(adverts);
 
-    similarPinsElement.appendChild(window.map.renderPins(uniqueAdverts));
+    similarPinsElement.appendChild(window.map.renderPins(filteredAdverts));
 
     window.map.setPinClickListener(function (evt) {
       isOpenPopup = true;
-      openClosePopup(evt, isOpenPopup, uniqueAdverts);
+      openClosePopup(evt, isOpenPopup, filteredAdverts);
     });
   };
 
@@ -103,9 +96,7 @@
   };
 
   // фильтрация
-  mapFilters.addEventListener('change', window.debounce(function () {
-    updateAdverts();
-  }));
+  mapFilters.addEventListener('change', window.debounce(updateAdverts));
 
   // обработчик на Enter
   window.map.setMainPinPressListener(function (evt) {
@@ -139,13 +130,7 @@
   });
 
   var errorHandler = function (errorMessage) {
-    var errorMessageTemplate = document.querySelector('#error')
-      .content
-      .querySelector('.error');
-
-    var errorElement = errorMessageTemplate.cloneNode(true);
-    errorElement.querySelector('.error__message').textContent = errorMessage;
-    document.body.appendChild(errorElement);
+    window.message.showErrorMsg(errorMessage);
 
     var errorButton = document.querySelector('.error__button');
     errorButton.addEventListener('click', function (evt) {
@@ -161,9 +146,7 @@
   };
 
   var uploadSuccessHandler = function () {
-    var successElement = successMessageTemplate.cloneNode(true);
-    document.body.appendChild(successElement);
-
+    window.message.showSuccessMsg();
     document.addEventListener('click', function (evt) {
       isOpenPopup = false;
       openClosePopup(evt, isOpenPopup);

@@ -1,6 +1,6 @@
 'use strict';
-(function () {
 
+(function () {
   var mapFilters = document.querySelector('.map__filters-container');
   var cardTemplate = document.querySelector('#card')
       .content

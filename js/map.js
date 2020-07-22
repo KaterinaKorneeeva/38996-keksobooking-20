@@ -62,5 +62,4 @@
     renderPins: renderPins,
     deletePinsOnMap: deletePinsOnMap
   };
-
 })();
