@@ -26,6 +26,10 @@
     });
   };
 
+
+
+
+
   // нажатие ENTER по главному пину
   var setMainPinPressListener = function (listener) {
     mainPin.addEventListener('keydown', listener);
@@ -44,6 +48,21 @@
     });
   };
 
+  // Нахождение дефолтных координат главного пина
+  var getDefaultPinCoord = function (pin) {
+
+    var pinW = pin.clientWidth;
+    var pinH = pin.clientHeight;
+
+    var pinLeft = pin.offsetLeft;
+    var buttonTop = pin.offsetTop;
+
+    var pinX = pinLeft + pinW / 2;
+    var pinY = buttonTop + pinH / 2;
+
+    return pinX + ', ' + pinY;
+  };
+
   // Нахождение координат главного пина
   var getPinCoord = function (pin) {
     var pinLeft = pin.style.left;
@@ -60,6 +79,7 @@
     setPinClickListener: setPinClickListener,
     getPinCoord: getPinCoord,
     renderPins: renderPins,
-    deletePinsOnMap: deletePinsOnMap
+    deletePinsOnMap: deletePinsOnMap,
+    getDefaultPinCoord: getDefaultPinCoord
   };
 })();

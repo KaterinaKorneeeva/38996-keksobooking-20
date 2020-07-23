@@ -10,17 +10,29 @@
   var adverts = [];
   var mapFilters = document.querySelector('.map__filters-container');
   var isOpenPopup = false;
+  var formElements = document.querySelectorAll('fieldset, select');
 
   // перевод страницы в активное состояние
   var setPageEnabled = function (enabled) {
     if (enabled) {
       var coordinates = window.map.getPinCoord(mainPin);
+      console.log('coordinates',coordinates);
       address.value = coordinates;
       map.classList.remove('map--faded');
+
+      for (var i = 0; i < formElements.length; i++) {
+        formElements[i].removeAttribute('disabled');
+      }
       advertForm.classList.remove('ad-form--disabled');
+
     } else {
-      address.value = '';
+      var defaultCoord = window.map.getDefaultPinCoord(mainPin);
+      address.setAttribute('value', defaultCoord);
       map.classList.add('map--faded');
+
+      for (var i = 0; i < formElements.length; i++) {
+        formElements[i].setAttribute('disabled', true);
+      }
       advertForm.classList.add('ad-form--disabled');
     }
   };
@@ -162,6 +174,8 @@
     adverts = data;
     updateAdverts();
   };
+
+  setPageEnabled();
 
   window.backend.load(successHandler, errorHandler);
 
