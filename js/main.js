@@ -16,22 +16,19 @@
   var setPageEnabled = function (enabled) {
     if (enabled) {
       var coordinates = window.map.getPinCoord(mainPin);
-      console.log('coordinates',coordinates);
       address.value = coordinates;
       map.classList.remove('map--faded');
-
       for (var i = 0; i < formElements.length; i++) {
         formElements[i].removeAttribute('disabled');
       }
       advertForm.classList.remove('ad-form--disabled');
-
+      window.backend.load(successHandler, errorHandler);
     } else {
       var defaultCoord = window.map.getDefaultPinCoord(mainPin);
       address.setAttribute('value', defaultCoord);
       map.classList.add('map--faded');
-
-      for (var i = 0; i < formElements.length; i++) {
-        formElements[i].setAttribute('disabled', true);
+      for (var j = 0; j < formElements.length; j++) {
+        formElements[j].setAttribute('disabled', true);
       }
       advertForm.classList.add('ad-form--disabled');
     }
@@ -108,7 +105,10 @@
   };
 
   // фильтрация
-  mapFilters.addEventListener('change', window.debounce(updateAdverts));
+  mapFilters.addEventListener('change', function (evt) {
+    window.debounce(updateAdverts);
+    openClosePopup(evt, !isOpenPopup);
+  });
 
   // обработчик на Enter
   window.map.setMainPinPressListener(function (evt) {
@@ -177,6 +177,5 @@
 
   setPageEnabled();
 
-  window.backend.load(successHandler, errorHandler);
 
 })();

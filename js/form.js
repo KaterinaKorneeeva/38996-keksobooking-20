@@ -8,6 +8,7 @@
   var timeout = advertForm.querySelector('#timeout');
   var typeOfHousing = advertForm.querySelector('#type');
   var priceInput = advertForm.querySelector('#price');
+  var resetFormBtn = advertForm.querySelector('.ad-form__reset');
 
   var onRoomsAndGuestsChange = function () {
     var error = '';
@@ -42,6 +43,11 @@
     priceInput.min = minPrice;
   };
 
+  var onResetClick = function (evt) {
+    evt.preventDefault();
+    advertForm.reset();
+  };
+
   roomsNumber.addEventListener('change', onRoomsAndGuestsChange);
   capacity.addEventListener('change', onRoomsAndGuestsChange);
   timein.addEventListener('change', onTimeInTimeOutChange);
@@ -52,6 +58,8 @@
   var setSubmitClickListener = function (listener) {
     advertForm.addEventListener('submit', listener);
   };
+
+  resetFormBtn.addEventListener('click', onResetClick);
 
   window.form = {
     setSubmitClickListener: setSubmitClickListener

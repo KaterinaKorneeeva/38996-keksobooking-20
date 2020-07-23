@@ -26,10 +26,6 @@
     });
   };
 
-
-
-
-
   // нажатие ENTER по главному пину
   var setMainPinPressListener = function (listener) {
     mainPin.addEventListener('keydown', listener);
