@@ -105,10 +105,7 @@
   };
 
   // фильтрация
-  mapFilters.addEventListener('change', function (evt) {
-    window.debounce(updateAdverts);
-    openClosePopup(evt, !isOpenPopup);
-  });
+  mapFilters.addEventListener('change', window.debounce(updateAdverts));
 
   // обработчик на Enter
   window.map.setMainPinPressListener(function (evt) {
@@ -176,6 +173,4 @@
   };
 
   setPageEnabled();
-
-
 })();
