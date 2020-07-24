@@ -75,7 +75,6 @@
 
   // показать попап
   var openClosePopup = function (evt, popup) {
-
     if (popup) {
       var selectedPin = evt.target;
       if (evt.target.className === 'map__pin') {
