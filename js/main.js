@@ -75,6 +75,7 @@
 
   // показать попап
   var openClosePopup = function (evt, popup) {
+
     if (popup) {
       var selectedPin = evt.target;
       if (evt.target.className === 'map__pin') {
@@ -88,6 +89,7 @@
       onPopupClick();
       onPopupEscPress();
     } else {
+
       var popupBlock = document.querySelector('.map__card');
       if (popupBlock) {
         popupBlock.remove();
@@ -104,9 +106,16 @@
     }
   };
 
-  // фильтрация
-  mapFilters.addEventListener('change', window.debounce(updateAdverts));
+  // // фильтрация
+  mapFilters.addEventListener('change', window.debounce(function (evt) {
+    updateAdverts();
+    var popupBlock = document.querySelector('.map__card');
+    if (popupBlock) {
+      isOpenPopup = false;
+      openClosePopup(evt, isOpenPopup);
+    }
 
+  }));
   // обработчик на Enter
   window.map.setMainPinPressListener(function (evt) {
     window.utils.isEnterEvent(evt, function () {
