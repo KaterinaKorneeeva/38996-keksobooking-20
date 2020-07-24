@@ -1,6 +1,6 @@
 'use strict';
-(function () {
 
+(function () {
   var similarPinTemplate = document.querySelector('#pin')
     .content
     .querySelector('.map__pin');

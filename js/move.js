@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-
   var MAIN_PIN_W = 65;
   var map = document.querySelector('.map');
   var pinHandle = document.querySelector('.map__pin--main');
@@ -72,5 +71,4 @@
     pinHandle.style.left = x + 'px';
     pinHandle.style.top = y + 'px';
   };
-
 })();

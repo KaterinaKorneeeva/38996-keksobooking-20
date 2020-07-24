@@ -1,13 +1,22 @@
 'use strict';
+
 (function () {
-  // url отправка данных
-  var URL = 'https://javascript.pages.academy/keksobooking';
+  var TIMEOUT_IN_MS = 10000;
   var StatusCode = {
     OK: 200
   };
-  var TIMEOUT_IN_MS = 10000;
 
-  window.upload = function (onSuccess, onError, data) {
+  var Url = {
+    LOAD: 'https://javascript.pages.academy/keksobooking/data',
+    SAVE: 'https://javascript.pages.academy/keksobooking'
+  };
+
+  var Method = {
+    GET: 'GET',
+    POST: 'POST'
+  };
+
+  var createRequest = function (onSuccess, onError) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
 
@@ -28,12 +37,29 @@
     });
 
     xhr.timeout = TIMEOUT_IN_MS;
+    return xhr;
+  };
 
+  var load = function (onSuccess, onError) {
+    var xhr = createRequest(onSuccess, onError);
     // отправляем данные - открываем соединение типа POST
-    xhr.open('POST', URL);
+    xhr.open(Method.GET, Url.LOAD);
+    // передаем данные
+    xhr.send();
+  };
+
+  var save = function (onSuccess, onError, data) {
+    var xhr = createRequest(onSuccess, onError);
+    // отправляем данные - открываем соединение типа POST
+    xhr.open(Method.POST, Url.SAVE);
 
     // передаем данные
     xhr.send(data);
+  };
+
+  window.backend = {
+    load: load,
+    save: save
   };
 
 })();

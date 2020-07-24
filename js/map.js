@@ -3,7 +3,6 @@
 
   var MAIN_PIN_W = 65;
   var MAIN_PIN_H = 87;
-  var MAX_SIMILAR_ADVERTS_COUNT = 5;
 
   var map = document.querySelector('.map');
   var mainPin = document.querySelector('.map__pin--main');
@@ -11,14 +10,10 @@
 
   // Функция добавления нового эемента к списку
   var renderPins = function (adverts) {
-    var takeNumber = adverts.length > MAX_SIMILAR_ADVERTS_COUNT ? MAX_SIMILAR_ADVERTS_COUNT : adverts.length;
-
     var fragment = document.createDocumentFragment();
-
-    adverts.slice(0, takeNumber)
-      .forEach(function (ad) {
-        fragment.appendChild(window.pin.renderPin(ad));
-      });
+    adverts.forEach(function (ad) {
+      fragment.appendChild(window.pin.renderPin(ad));
+    });
 
     return fragment;
   };
@@ -49,6 +44,21 @@
     });
   };
 
+  // Нахождение дефолтных координат главного пина
+  var getDefaultPinCoord = function (pin) {
+
+    var pinW = pin.clientWidth;
+    var pinH = pin.clientHeight;
+
+    var pinLeft = pin.offsetLeft;
+    var buttonTop = pin.offsetTop;
+
+    var pinX = pinLeft + pinW / 2;
+    var pinY = buttonTop + pinH / 2;
+
+    return pinX + ', ' + pinY;
+  };
+
   // Нахождение координат главного пина
   var getPinCoord = function (pin) {
     var pinLeft = pin.style.left;
@@ -65,7 +75,7 @@
     setPinClickListener: setPinClickListener,
     getPinCoord: getPinCoord,
     renderPins: renderPins,
-    deletePinsOnMap: deletePinsOnMap
+    deletePinsOnMap: deletePinsOnMap,
+    getDefaultPinCoord: getDefaultPinCoord
   };
-
 })();

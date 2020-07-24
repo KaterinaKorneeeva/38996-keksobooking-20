@@ -1,7 +1,6 @@
 'use strict';
 
 (function () {
-
   var map = document.querySelector('.map');
   var advertForm = document.querySelector('.ad-form');
   var similarPinsElement = document.querySelector('.map__pins');
@@ -9,9 +8,9 @@
   var address = advertForm.querySelector('#address');
   var pageEnabled = false;
   var adverts = [];
-  var typeOfHouse = 'any';
-  var mapTypeHouseElement = document.querySelector('#housing-type');
+  var mapFilters = document.querySelector('.map__filters-container');
   var isOpenPopup = false;
+  var formElements = document.querySelectorAll('fieldset, select');
 
   // перевод страницы в активное состояние
   var setPageEnabled = function (enabled) {
@@ -19,10 +18,18 @@
       var coordinates = window.map.getPinCoord(mainPin);
       address.value = coordinates;
       map.classList.remove('map--faded');
+      for (var i = 0; i < formElements.length; i++) {
+        formElements[i].removeAttribute('disabled');
+      }
       advertForm.classList.remove('ad-form--disabled');
+      window.backend.load(successHandler, errorHandler);
     } else {
-      address.value = '';
+      var defaultCoord = window.map.getDefaultPinCoord(mainPin);
+      address.setAttribute('value', defaultCoord);
       map.classList.add('map--faded');
+      for (var j = 0; j < formElements.length; j++) {
+        formElements[j].setAttribute('disabled', true);
+      }
       advertForm.classList.add('ad-form--disabled');
     }
   };
@@ -30,27 +37,14 @@
   var updateAdverts = function () {
     window.map.deletePinsOnMap();
 
-    // фильтрация по типу жилья
-    var sameTypeOfHouseAdverts = adverts.filter(function (it) {
-      return it.offer.type === typeOfHouse;
-    });
+    var filteredAdverts = window.filters.filterAdverts(adverts);
 
-    // отфильтрованные объявления + все объявления
-    var filteredAdverts = sameTypeOfHouseAdverts.concat(adverts);
-
-    // уникальные объявления
-    var uniqueAdverts =
-    filteredAdverts.filter(function (it, i) {
-      return filteredAdverts.indexOf(it) === i;
-    });
-
-    similarPinsElement.appendChild(window.map.renderPins(uniqueAdverts));
+    similarPinsElement.appendChild(window.map.renderPins(filteredAdverts));
 
     window.map.setPinClickListener(function (evt) {
       isOpenPopup = true;
-      openClosePopup(evt, isOpenPopup, uniqueAdverts);
+      openClosePopup(evt, isOpenPopup, filteredAdverts);
     });
-
   };
 
   var onPopupClick = function () {
@@ -110,11 +104,10 @@
     }
   };
 
-  // фильтр по типу жилья
-  mapTypeHouseElement.addEventListener('change', function (evt) {
-    var newType = evt.target.value;
-    typeOfHouse = newType;
-    updateAdverts();
+  // фильтрация
+  mapFilters.addEventListener('change', function (evt) {
+    window.debounce(updateAdverts);
+    openClosePopup(evt, !isOpenPopup);
   });
 
   // обработчик на Enter
@@ -138,7 +131,7 @@
   // обработчик на submit
   window.form.setSubmitClickListener(function (evt) {
     evt.preventDefault();
-    window.upload(successHandler2, errorHandler, new FormData(advertForm), function () {});
+    window.backend.save(uploadSuccessHandler, errorHandler, new FormData(advertForm));
   });
 
   document.addEventListener('keydown', function (evt) {
@@ -149,13 +142,7 @@
   });
 
   var errorHandler = function (errorMessage) {
-    var errorMessageTemplate = document.querySelector('#error')
-      .content
-      .querySelector('.error');
-
-    var errorElement = errorMessageTemplate.cloneNode(true);
-    errorElement.querySelector('.error__message').textContent = errorMessage;
-    document.body.appendChild(errorElement);
+    window.message.showErrorMsg(errorMessage);
 
     var errorButton = document.querySelector('.error__button');
     errorButton.addEventListener('click', function (evt) {
@@ -170,15 +157,8 @@
 
   };
 
-  // как правильно назвать этот обработчик??  (у меня уже есть один для GET)
-  var successHandler2 = function () {
-    var successMessageTemplate = document.querySelector('#success')
-      .content
-      .querySelector('.success');
-
-    var successElement = successMessageTemplate.cloneNode(true);
-    document.body.appendChild(successElement);
-
+  var uploadSuccessHandler = function () {
+    window.message.showSuccessMsg();
     document.addEventListener('click', function (evt) {
       isOpenPopup = false;
       openClosePopup(evt, isOpenPopup);
@@ -195,6 +175,7 @@
     updateAdverts();
   };
 
-  window.load(successHandler, errorHandler);
+  setPageEnabled();
+
 
 })();
