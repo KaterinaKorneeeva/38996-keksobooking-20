@@ -11,28 +11,26 @@
     var cardPhotoElements = card.querySelectorAll('.popup__photos > img');
     var cardPhotoElement = card.querySelector('.popup__photos > img');
     var cardPhotoBlock = document.querySelector('.popup__photos');
-
     cardPhotoBlock.removeChild(cardPhotoElements[0]);
-    for (var i = 0; i < photos.length; i++) {
+    photos.forEach(function (photo) {
       var cardPhoto = cardPhotoElement.cloneNode(true);
-      cardPhoto.src = photos[i];
+      cardPhoto.src = photo;
       cardPhotoBlock.appendChild(cardPhoto);
-    }
+    });
   };
 
   // добавление списка удобств в шаблон "card"
   var renderFeaturesOffer = function (card, features) {
+    var cardFeatureBlock = document.querySelector('.popup__features');
     var cardFeatureElements = card.querySelectorAll('.popup__features li');
-
-    for (var i = 0; i < cardFeatureElements.length; i++) {
-      document.querySelector('.popup__features').removeChild(cardFeatureElements[i]);
-    }
-
-    for (i = 0; i < features.length; i++) {
+    cardFeatureElements.forEach(function (el) {
+      cardFeatureBlock.removeChild(el);
+    });
+    features.forEach(function (feature) {
       var secondElementHTML = document.createElement('li');
-      secondElementHTML.className = 'popup__feature ' + 'popup__feature--' + features[i];
-      document.querySelector('.popup__features').appendChild(secondElementHTML);
-    }
+      secondElementHTML.className = 'popup__feature ' + 'popup__feature--' + feature;
+      cardFeatureBlock.appendChild(secondElementHTML);
+    });
   };
 
   // создание одной карточки предложения перед блоком "map__filters-container"
@@ -65,18 +63,9 @@
     }
   };
 
-  // закрытие попапа по клавише Esc
-  var setCardPressListener = function (listener) {
-    var popupClose = document.querySelector('.popup__close');
-    if (popupClose) {
-      popupClose.addEventListener('keydown', listener);
-    }
-  };
-
   window.card = {
     renderCard: renderCard,
-    setCardClickListener: setCardClickListener,
-    setCardPressListener: setCardPressListener
+    setCardClickListener: setCardClickListener
   };
 
 })();

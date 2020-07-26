@@ -1,6 +1,11 @@
 'use strict';
 
 (function () {
+
+  var ROOMS_MAX = 100;
+  var ROOMS_MIN = 1;
+  var CAPACITY_MIN = 0;
+
   var advertForm = document.querySelector('.ad-form');
   var roomsNumber = advertForm.querySelector('#room_number');
   var capacity = advertForm.querySelector('#capacity');
@@ -10,22 +15,26 @@
   var priceInput = advertForm.querySelector('#price');
   var resetFormBtn = advertForm.querySelector('.ad-form__reset');
 
-  var onRoomsAndGuestsChange = function () {
+
+  var validateRoomsAndGuests = function () {
     var error = '';
     var roomsNum = parseInt(roomsNumber.value, 10);
     var capacityNum = parseInt(capacity.value, 10);
-
-    if (roomsNum === 100 && capacityNum !== 0) {
+    if (roomsNum === ROOMS_MAX && capacityNum !== CAPACITY_MIN) {
       error = 'Не для гостей';
-    } else if (roomsNum !== 100 && capacityNum === 0) {
+    } else if (roomsNum !== ROOMS_MAX && capacityNum === CAPACITY_MIN) {
       error = 'Для гостей';
     } else if (capacityNum > roomsNum) {
-      error = roomsNum === 1
+      error = roomsNum === ROOMS_MIN
         ? 'Для 1 гостя'
         : 'Для ' + roomsNum + ' гостей';
     }
 
     capacity.setCustomValidity(error);
+  };
+
+  var onRoomsAndGuestsChange = function () {
+    validateRoomsAndGuests();
   };
 
   // синхронизация Поля «Время заезда» и «Время выезда»
@@ -45,6 +54,7 @@
 
   var onResetClick = function (evt) {
     evt.preventDefault();
+    window.images.clearPhotosBlock();
     advertForm.reset();
   };
 
@@ -54,9 +64,11 @@
   timeout.addEventListener('change', onTimeInTimeOutChange);
   typeOfHousing.addEventListener('change', onTypeChange);
 
+  validateRoomsAndGuests();
+
   // обработчик на кнопку отправки формы
-  var setSubmitClickListener = function (listener) {
-    advertForm.addEventListener('submit', listener);
+  var setSubmitClickListener = function (onFormSubmit) {
+    advertForm.addEventListener('submit', onFormSubmit);
   };
 
   resetFormBtn.addEventListener('click', onResetClick);

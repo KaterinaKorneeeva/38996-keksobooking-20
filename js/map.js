@@ -27,20 +27,20 @@
   };
 
   // нажатие ENTER по главному пину
-  var setMainPinPressListener = function (listener) {
-    mainPin.addEventListener('keydown', listener);
+  var setMainPinPressListener = function (onMainPinPress) {
+    mainPin.addEventListener('keydown', onMainPinPress);
   };
 
   // клик по главному пину
-  var setMainPinClickListener = function (listener) {
-    mainPin.addEventListener('click', listener);
+  var setMainPinClickListener = function (onMainPinClick) {
+    mainPin.addEventListener('click', onMainPinClick);
   };
 
   // клик по пину
-  var setPinClickListener = function (listener) {
+  var setPinClickListener = function (onPinClick) {
     var pins = document.querySelectorAll('.map__pin:not(.map__pin--main)');
     pins.forEach(function (pin) {
-      pin.addEventListener('click', listener);
+      pin.addEventListener('click', onPinClick);
     });
   };
 

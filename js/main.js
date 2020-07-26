@@ -4,13 +4,15 @@
   var map = document.querySelector('.map');
   var advertForm = document.querySelector('.ad-form');
   var similarPinsElement = document.querySelector('.map__pins');
-  var mainPin = document.querySelector('.map__pin--main');
+  var mainPin = map.querySelector('.map__pin--main');
   var address = advertForm.querySelector('#address');
   var pageEnabled = false;
   var adverts = [];
   var mapFilters = document.querySelector('.map__filters-container');
   var isOpenPopup = false;
   var formElements = document.querySelectorAll('fieldset, select');
+  var avatarChooser = document.querySelector('.ad-form__field input[type=file]');
+  var photoChooser = document.querySelector('.ad-form__upload input[type=file]');
 
   // перевод страницы в активное состояние
   var setPageEnabled = function (enabled) {
@@ -18,18 +20,18 @@
       var coordinates = window.map.getPinCoord(mainPin);
       address.value = coordinates;
       map.classList.remove('map--faded');
-      for (var i = 0; i < formElements.length; i++) {
-        formElements[i].removeAttribute('disabled');
-      }
+      formElements.forEach(function (el) {
+        el.removeAttribute('disabled');
+      });
       advertForm.classList.remove('ad-form--disabled');
       window.backend.load(successHandler, errorHandler);
     } else {
       var defaultCoord = window.map.getDefaultPinCoord(mainPin);
       address.setAttribute('value', defaultCoord);
       map.classList.add('map--faded');
-      for (var j = 0; j < formElements.length; j++) {
-        formElements[j].setAttribute('disabled', true);
-      }
+      formElements.forEach(function (el) {
+        el.setAttribute('disabled', true);
+      });
       advertForm.classList.add('ad-form--disabled');
     }
   };
@@ -64,13 +66,11 @@
     });
   };
 
+
   var getInfoByCard = function (atr) {
-    for (var i = 0; i < adverts.length; i++) {
-      if (adverts[i].author.avatar === atr) {
-        var advert = adverts[i];
-      }
-    }
-    return advert;
+    return adverts.filter(function (advert) {
+      return advert.author.avatar === atr;
+    })[0];
   };
 
   // показать попап
@@ -136,6 +136,9 @@
   // обработчик на submit
   window.form.setSubmitClickListener(function (evt) {
     evt.preventDefault();
+    avatarChooser.removeEventListener('change', window.images.onAvatarClick);
+    photoChooser.removeEventListener('change', window.images.onPhotoClick);
+    window.images.clearPhotosBlock();
     window.backend.save(uploadSuccessHandler, errorHandler, new FormData(advertForm));
   });
 
@@ -146,29 +149,28 @@
     });
   });
 
+
   var errorHandler = function (errorMessage) {
     window.message.showErrorMsg(errorMessage);
-
     var errorButton = document.querySelector('.error__button');
-    errorButton.addEventListener('click', function (evt) {
+    var onErrorClick = function (evt) {
       isOpenPopup = false;
       openClosePopup(evt, isOpenPopup);
-    });
-
-    document.addEventListener('click', function (evt) {
-      isOpenPopup = false;
-      openClosePopup(evt, isOpenPopup);
-    });
-
+      errorButton.removeEventListener('click', onErrorClick);
+      document.removeEventListener('click', onErrorClick);
+    };
+    errorButton.addEventListener('click', onErrorClick);
+    document.addEventListener('click', onErrorClick);
   };
 
   var uploadSuccessHandler = function () {
     window.message.showSuccessMsg();
-    document.addEventListener('click', function (evt) {
+    var onSuccessClick = function (evt) {
       isOpenPopup = false;
       openClosePopup(evt, isOpenPopup);
-    });
-
+      document.removeEventListener('click', onSuccessClick);
+    };
+    document.addEventListener('click', onSuccessClick);
     advertForm.reset();
     pageEnabled = !pageEnabled;
     setPageEnabled(pageEnabled);
@@ -179,6 +181,9 @@
     adverts = data;
     updateAdverts();
   };
+
+  avatarChooser.addEventListener('change', window.images.onAvatarClick);
+  photoChooser.addEventListener('change', window.images.onPhotoClick);
 
   setPageEnabled();
 })();
